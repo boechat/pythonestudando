@@ -1,0 +1,43 @@
+## DESAFIO DEV PRO - AULA 07 - Calcular notas e médias de alunos com Python
+# https://youtu.be/6hUdsBTwJlU
+
+# 16) Utilize uma lista para resolver o problema a seguir:
+# Uma empresa paga seus vendedores com base em comissões. O vendedor recebe $200 por semana mais 9% de suas vendas brutas daquela semana.
+# Por exemplo, um vendedor que teve vendas brutas de $3000 em uma semana recebe $200 mais 9% de $3000, ou seja, um total de $470.
+# Escreva um programa (usando um array de contadores) que determine quantos vendedores receberam salários nos seguintes intervalos de valores:
+# a) 200 - 299       |  b) 300  - 399     |  c) 400 -  499
+# d) 500 - 599       |  e) 600 -  699     |  f) 700 -  799
+# g) 800 - 899       |  h) 900 -  999     |  i) acima de 1000
+
+# Desafio: Crie uma fórmula para chegar na posição da lista a partir do salário, sem fazer vários ifs alinhados
+
+qtd_valores = [0,0,0,0,0,0,0,0,0]
+valores = ["200-299", "300-399", "400-499", "500-599", "600-699","700-799", "800-899", "900-999", "1000+"]
+vendas = [2400,3500,5590,6600,1610,1612,1020,2903,1506,9300,12304]
+
+#Pra cada valor da lista de vendas
+for venda in vendas:
+    # Formula do Salario
+    salario = 200 + (0.09 * venda)
+    # Arredonda Salario pra formato $X.XX
+    salario = round(salario,2)
+    #calcula o intervalo pertencente
+    intervalo = int((salario -200) //100)
+    print('Salario = $',salario,'|| Intervalo =',intervalo)
+    
+    # Caso ultrapasse o intervalo máximo
+    if intervalo >= 8:
+        intervalo = 8
+    
+    #Vê a lista que vai receber cada valor
+    qtd_valores[intervalo] = qtd_valores[intervalo] + 1
+    #print(qtd_valores[intervalo])
+    
+    print('-----------')
+
+print('----Lista com a qtd de Valores')
+print(qtd_valores)
+
+# Imprime a qtd de vendas
+for i in range(len(qtd_valores)):
+    print('QTD DE VENDAS :',qtd_valores[i] ,'| FAIXA DE PRECO : $',valores[i])
