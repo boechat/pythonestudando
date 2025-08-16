@@ -95,3 +95,58 @@ mascara_en = '%Y-%d-%m %H:%M'
 print('-------------------')
 print(datetime.strptime(data_str, mascara_en))
 print(data_agora.strftime(mascara_ptbr))
+
+print('\n-------------------------------------- FUSO HORARIO / TIMEZONE --------------------------------------')
+###### Trabalhando com Antecedencia
+# Quando trabalhamos com data e hora, lidar com fusos horarios é uma necessidade comum. Python facilita isso através do módulo 'pytz'
+
+## pip install pytz
+import datetime
+import pytz
+
+# Criando datetime com timezone
+d = datetime.datetime.now(pytz.timezone('America/Sao_Paulo'))
+print('Date time e TimeZone',d)  
+# Pode ser acessado a lista de timezones em en.wikipedia.org/wiki/List_of_tz_database_time_zones
+# boa pratica olhar o Relogio Utc no google
+#################################
+
+from datetime import datetime, timezone
+import pytz
+
+# Agora em UTC
+data_utc = datetime.now(timezone.utc)
+
+# Agora em Oslo convertido a partir do UTC
+oslo_tz = pytz.timezone("Europe/Oslo")
+data_oslo = data_utc.astimezone(oslo_tz)
+
+# Diferença de horas e minutos entre Oslo e UTC
+diferenca = data_oslo - data_utc
+diferenca_horas = int(diferenca.total_seconds() // 3600)
+diferenca_minutos = int((diferenca.total_seconds() % 3600) // 60)
+
+print("UTC AGORA:   ", data_utc.strftime("%H:%M"))
+print("HORA EM OSLO:", data_oslo.strftime("%H:%M"))
+print(f"Diferença: {diferenca_horas}h {diferenca_minutos}min")
+
+print('------------------')
+
+from datetime import datetime
+import pytz
+
+# Timezone de Oslo
+oslo_tz = pytz.timezone("Europe/Oslo")
+data_oslo = datetime.now(oslo_tz)
+
+# Diferença de Oslo para UTC em horas
+diferenca_horas = data_oslo.utcoffset().total_seconds() / 3600
+
+print("HORA EM OSLO:", data_oslo.strftime("%H:%M"))
+print(f"Diferença para UTC: {diferenca_horas:.0f}h")
+
+#####################
+
+
+
+
