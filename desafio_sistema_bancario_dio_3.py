@@ -1,3 +1,8 @@
+###
+########### FAZER:
+# Terminar Caminho CLiente
+# Terminar Caminho Funcionario
+
 ####################################### DESAFIO:
 ##################### SISTEMA BANCÁRIO PARTE 3 - OTIMIZANDO O SISTEMA BANCÁRIO COM FUNÇÕES PYTHON ############################
 # Continuar o desafio do Sistema Bancário, adicionando
@@ -54,286 +59,198 @@
 #   3) LISTAR CONTAS 
 #   4) ATUALIZAR INFORMAÇÕES DO USUARIO
 #   5) TROCAR SENHA
-
-##############################################################################################################
 from datetime import datetime
+import calendar
 import sys
-
-
+#############################################################################################
+##############################      INICIALIZADORES      ####################################
+#
+#Define o perfil do admin
+perfil_adm = 'admin'
 # Define Limite de Transações diárias para Uma Conta
 limite_diario = 10
-
 # Define Limite de Saques diarios
-qtd_saques = 3 
-
-# Define o saldo d Conta Teste do Sistema 
+qtd_saques = 3
+# Define o saldo d Conta Teste do Sistema
 saldo_conta_teste = 6700.45
-
-# Listas
+# Listas Cliente
 lista_data_transacao = []
 lista_valor_transacao = []
 lista_tipo_transacao = []
-
+# Listas Usuario
+lista_usuario = ['24859637040','36581420906','52790163480']
+lista_dicionario = [{'CPF': '24859637040', 'NOME': 'ADD EEE', 'DATA DE NASCIMENTO': '03/03/1922', 'ENDERECO': 'e r f d RJ'},
+    {'CPF': '52790163480', 'NOME': 'BBBBBB BBBBBB', 'DATA DE NASCIMENTO': '26/07/1910','ENDERECO': 'PPP, ,01, ,EREA, ,OANC, ,RJ'},
+    {'CPF': '52790163482', 'NOME': 'CCCCCC BBBBBB', 'DATA DE NASCIMENTO': '26/07/1923','ENDERECO': 'PPP, ,01, ,EREA, ,OANC, ,RJ'}
+]
+lista_contas = []
+#############################################################################################
+###################################      FUNCOES     ########################################
+#############################################################################################
+# 
+#########################################  DATA     ######################################## 
+#
 # Busca Dia Atual
 def dia_atual():
     hoje = datetime.now().strftime("%d/%m/%Y")
-    return(hoje)
-
+    return (hoje)
+    
 # Conta dia atual
 def contar_dia():
     # Verifica a lista que contem as datas de transações e conta quantos equivalem ao dia atual
     qtd_transacoes_hoje = lista_data_transacao.count(dia_atual())
     # Retorna quantidade de transações de hoje
-    return(qtd_transacoes_hoje)
+    return (qtd_transacoes_hoje)
+
+#########################################       CPF     ##################################### 
+def validar_cpf(cpf):
+    # Verifica 11 dígitos
+    if len(cpf) != 11:
+        return False
+# Verifica se todos os Digitos sao iguais
+    if cpf == cpf[0] * 11:
+        return False
+
+    # Calcula o 1º dígito
+    soma = sum(int(cpf[i]) * (10 - i) for i in range(9))
+    dig1 = (soma * 10 % 11) % 10
+
+    # Calcula o 2º dígito
+    soma = sum(int(cpf[i]) * (11 - i) for i in range(10))
+    dig2 = (soma * 10 % 11) % 10
+
+    # Compara com os dígitos originais
+    return dig1 == int(cpf[9]) and dig2 == int(cpf[10])
+
+#############################################################################################
+#                                                                                           #
+######################################   TELAS    ###########################################
+#
+#
+
+def tela_start():
+    inicio = """
+------------------ BANCO ------------------
+
+    [1] LOGIN
+    [q] Sair
+--------------------------------------------
+    =>"""
+    return input(inicio)
+
+######
+
+
+def tela_login():
+    inicio = """
+------------------ LOGIN ------------------
+ENTRE COM SEU LOGIN 
+--------------------------------------------
+    =>"""
+    print(inicio)
+    login = input('ENTRE COM SEU LOGIN OU CPF: \n')
+    senha = input('ENTRE COM SUA SENHA OU DATA DE NASCIMENTO: \n')
+    # PARA FUNCIONARIO, ENTRAR COM LOGIN e SENHA como admin 
+    print(lista_usuario,'---------------\n')
+    print(lista_dicionario,'---------------\n')
+    if(login == 'admin' and senha == 'admin'):
+        print('BEM VINDO, TESTER!')
+        return login
     
-# Interface do SIstema
-def interface(data_hoje):
-    global limite_diario
-    print(f'''
-====================BEM-VINDO!======================
-= Cliente: Teste01                                 =
-= Agencia: 001                                     =
-= Banco: 3201                                      =
-= DATA: {data_hoje}                                 =
-= Quantidade de Transações Diárias: {(limite_diario -contar_dia())}             =
-=**************************************************=                                                 
-= DIGITE PARA INICIAR SEU ATENDIMENTO              =
-= [1] - Extrato Bancário                           =
-= [2] - Deposito                                   =
-= [3] - Saques                                     =
-= [q] - Sair                                       =
-====================================================
-    ''')
-
-# Interacao do Usuario com o Sistema
-def interacao_interface():
-    while True:
-        escolha = input('\n-----------------------------------------\nEntre com o que deseja acessar\n-----------------------------------------\n')
-        if(escolha not in ('1', '2', '3', "q")):
-            print('\n-----------------------------------------\nValor inválido, tente novamente\n-----------------------------------------\n')
-        elif(escolha in ('1', "q") and (contar_dia() >= limite_diario)):
-             print('Número de Transações Diárias Encerradas. \n\n Por favor, tente novamente amanhã ou entre em contato com a Gerência!\n-----------------------------------------\n')
-             return(0)
-        elif(escolha in ('1','2','3',"q",) and (contar_dia() < limite_diario)):         
-            #print('elif')
-            return escolha
-
-########################################### EXTRATO 
-
-def extrato(lista_tipo,lista_valor,lista_data_transacao):
-    global saldo_conta_teste
-    global limite_diario
-    msg = (f'''
-====================EXTRATO=========================
-= Cliente: Teste01                                 =
-= Agencia: 001                                     =
-= Banco: 3201                                      =
-= DATA: {data_hoje}                                =
-= Quantidade de Saques Diarios: {qtd_saques}       =
-= Quantidade de Transações Diárias: {(limite_diario -contar_dia())}             =
-====================================================
-====================================================
-''')
-    print(msg)
-    for i in range(len(lista_tipo)):
-        print(f'''
-=  DATA: {lista_data_transacao[i]}                               
-=  TIPO OPERACAO : {lista_tipo[i][0]}                           ''')
-        if lista_tipo[i][0] == 'Saque':
-            print(f'''=   VALOR : --- R$ {lista_valor[i][0]:.2f}\n'''.replace('.', ','))
-        elif lista_tipo[i][0] == 'Depósito':
-            print(f'''=   VALOR : +++ R$ {lista_valor[i][0]:.2f}\n'''.replace('.', ','))
-    print(f'''
-=                                                  =
-=--------------------------------------------------=
-=                                                  =
-=                                                  =
-= SALDO FINAL: R$ {saldo_conta_teste}              =
-=                                                  =
-=                                                  =
-=================FIM DO EXTRATO=====================
-    ''')    
-    return(0)
-
-
-########################################################### SAQUES !
-
-def saque():
-    global qtd_saques, saldo_conta_teste,limite_diario
-    print(f'''
-====================SAQUES==========================
-= Cliente: Teste01                                 =
-= Agencia: 001                                     =
-= Banco: 3201                                      =
-= DATA: {data_hoje}                                 =
-= Quantidade de Transações Diárias: {(limite_diario -contar_dia())}             =
-= Quantidade de Saques Diarios: {qtd_saques}                  =
-=**************************************************=  
-''')
-
-    while True:
-        if (qtd_saques > 0):
-            escolha_saq = input('''
-= DIGITE PARA INICIAR SEU ATENDIMENTO              =
-= [1] - SACAR                                      =
-= [q] - Sair                                       =
-====================================================
-    ''')
-            if escolha_saq == '1':
-#                print('Entrou')
-                valor_saca = float(input('''
-====================================================
-=       QUANTO GOSTARIA DE SACAR?                  =
-=Digite o valor em numeros no formato R$ x.xx      =
-====================================================
-'''))
-                if float(valor_saca) <= 500.00 and float(saldo_conta_teste) > 0 and float(saldo_conta_teste) >= float(valor_saca):
-                    saldo_restante = float(saldo_conta_teste) - float(valor_saca)
-                    # Coloca o valor em uma lista
-                    lista_valor_transacao.append([valor_saca])
-                    # Coloca o tipo de ação realizada em uma lista
-                    lista_tipo_transacao.append(['Saque'])
-                    # Coloca a Data Realizada em uma lista
-                    lista_data_transacao.append(dia_atual())
-                    
-                    print('Operação Realizada com Sucesso')
-                    qtd_saques = qtd_saques - 1
-                    print('#             SAQUES RESTANTES: ',qtd_saques,'             #')
-
-
-                elif(saldo_conta_teste <= 0):
-                    print('Saldo Insuficiente!')
-                elif(valor_saca >= 500):
-                    print('Limite de Saque Atingindo, precisa ser menos de 500 reais')
-                elif(saldo_conta_teste < valor_saca):
-                    print('Valor a ser Sacado é Maior do que o Saldo da Conta')
-                    escolha_tenta = input('Deseja Tentar um novo Valor? [s]/[n]')
-                    if escolha_tenta == 's' and contar_dia() < 10:
-                        print('-------------------------')
-                    else:
-                        print('-----------VOLTANDO-------')
-                        return 0
-            elif(escolha_saq == 'q'):
-                print('-----------VOLTANDO-------')
-                return 0
-        else:
-            print('LIMITE DE SAQUES ATINGINDO, SEU LIMITE SERÁ LIBERADO NO DIA SEGUINTE A ESSA OPERAÇÃO')
-            return 0
-
-
-
-###########################################################  DEPOSITOS!
-def deposito():
-    global saldo_conta_teste, limite_diario
-    print(f'''
-====================DEPOSITOS=======================
-= Cliente: Teste01                                 =
-= Agencia: 001                                     =
-= Banco: 3201                                      =
-= DATA: {data_hoje}                                =
-= Quantidade de Transações Diárias: {(limite_diario -contar_dia())}             =
-=**************************************************=  
-''')
-
-    while True:
-        escolha_dep = input('''
-= DIGITE PARA INICIAR SEU ATENDIMENTO              =
-= [1] - DEPOSITOS                                      =
-= [q] - Sair                                       =
-====================================================
-    ''')
-        if escolha_dep == '1':
-#           print('Entrou')
-            valor_dep = float(input('''
-====================================================
-=       QUANTO GOSTARIA DE DEPOSITAR?              =
-=Digite o valor em numeros no formato R$ x.xx      =
-====================================================
-'''))
-            saldo_conta_teste = float(valor_dep) + float(saldo_conta_teste)
-            # Coloca o valor em uma lista
-            lista_valor_transacao.append([valor_dep])
-            # Coloca o tipo de ação realizada em uma lista
-            lista_tipo_transacao.append(['Depósito'])
-            # Coloca a Data Realizada em uma lista
-            lista_data_transacao.append(dia_atual())
-            
-            print('Operação Realizada com Sucesso')
-            print('Valor Depositado: ',valor_dep,'| Total: ',saldo_conta_teste)
-                    
-            escolha_tenta = input('Deseja Tentar um novo Valor? [s]/[n]')
-            if escolha_tenta == 's' and contar_dia() < limite_diario:          
-                print('-------------------------')
-            elif escolha_tenta == 'n' and contar_dia() < limite_diario:
-                print('-----------VOLTANDO-------')
-                return 0
-            elif contar_dia() >= limite_diario :
-                print('-----------Operação Cancelada: Limite de Transações Diárias-------')
-                return 0
- 
-        elif(escolha_dep == 'q'):
-            print('-----------VOLTANDO-------')
-            return 0
+    # PARA CLIENTES, PEDE CPF E VERIFICA NA LISTA_USUARIO e DEPOIS na LISTA_DICIONARIO    
+    elif(login in lista_usuario):  # Verifica o CPF na lista_usuario
+        #print('login = ',login,'  |  lista_usuario= ',lista_usuario)
+        login_encontrado = False
         
-
-
-    
-############################################################### Principal       ###########################################################
-
-data_hoje = dia_atual()
-
-while True:
-    interface(data_hoje)
-    escolha = interacao_interface()
-    
-    # Para Sair
-    if escolha == 'q':
-        while True:
-            escolha_sair = input('\n-----------------------------------------\nTem Certeza Que Deseja Sair? [s]\[n]\n-----------------------------------------\n')
-            if escolha_sair.lower() == 's':
-                print('\n-----------------------------------------\nVolte Sempre!\n-----------------------------------------\n')
-                #break
-                sys.exit()    
-            elif escolha_sair.lower() == 'n':
-                break 
+        for usuario in lista_dicionario:
+            #print(usuario['CPF'])
+            if login == usuario['CPF']:  # Verifica que o Login da Lista CPF é o mesmo do Dicionario
+               login_encontrado = usuario  # guarda o dicionario inteiro
+               break
+               # print('ITERADOR \n',iterador,'SENHA',senha,'\nITEM',item['DATA DE NASCIMENTO'])
+        if login_encontrado:
+            if senha == login_encontrado['DATA DE NASCIMENTO']:
+                print('DATA DE NASCIMENTO ',senha)
+                print('MATCH!')
+                return login
             else:
-                print('\n-----------------------------------------\nInput nao Reconhecido\n-----------------------------------------\n')
+                print('SENHA INCORRETA',senha,'---',login_encontrado['DATA DE NASCIMENTO'])
+            return False
+        else:
+            print('CPF NAO ENCONTRADO')
+            return False
+ 
+    else:
+        print('Credenciais Incorretas')
+        return False
+    #return input(inicio)
+
+######
+
+def menu_cliente():
+    menu = """
+------------------ MENU ------------------
+
+    [d] Depositar
+    [s] Sacar
+    [e] Extrato
+    [q] Sair
+--------------------------------------------
+    =>"""
+    return input(menu)
+
+#####
+
+def menu_funcionario():
+    menu = """
+------------- SISTEMA INTERNO ---------------
+
+    [u] Criar Novo Usuario
+    [c] Criar Conta Corrente
+    [l] Listagem de Usuários
+    [q] Sair
+--------------------------------------------
+    =>"""
+    return input(menu)
+#############################################################################################
+
+#############################################################################################
+
+def main():
     
-    # Caso Limite de Transações Diárias tenha sido Atingidas
-    elif escolha == '0' or escolha == 0:
-        print('\n-----------------------------------------\nVolte Sempre!\n-----------------------------------------\n')
+    # Inicializadores #
+    saldo = 0
+    limite = 500
+    extrato = ""
+    qtd_saques = 0
+    limite_saque = 3
+    lista_clientes = []
+    lista_contas = []
+    AGENCIA = "0001"
+    
+    while True:
+        escolha = tela_start()
         
-        sys.exit()  
-        
-    # Chamar Saque
-    elif escolha == "3":
-        while True:
-            print('Chamar Saque')
-            retorno_saque = saque()
-            if retorno_saque == '0' or retorno_saque == 0:
-                print('Voltando Ao Menu')
-                #print(lista_tipo_transacao,'\n',lista_valor_transacao)
-                break
-            print(lista_tipo_transacao,'\n',lista_valor_transacao)
+        if(escolha == '1'):
+            print('-Chama Tela de Login-')
+            login_realizado = tela_login()
+            if login_realizado != False:
+                print('LOGOU!',login_realizado,'|',perfil_adm)
+                if login_realizado == perfil_adm:
+                    menu_funcionario()
+                else:
+                    menu_cliente(login_realizado)
+            else:
+                print('Deu Erro no Login...')
+            # Caso Escolha seja = 1, Vai pedir login e senha ; 
             
-    # Chamar Depósitos
-    elif escolha == "2":
-        while True:
-            print('Chamar Depósitos')
-            retorno_deposito = deposito()
-            if retorno_deposito == '0' or retorno_deposito == 0:
-                print('\n\n\nVoltando Ao Menu\n\n\n')
-                #print(lista_tipo_transacao,'\n',lista_valor_transacao)
-                break
-            print(lista_tipo_transacao,'\n',lista_valor_transacao)
+        elif(escolha == 'q'):
+            print('-Encerrando Atendimento, Desligando Terminal')
+            sys.exit()
+        else:
+            print('Tecla Não Suportada, Insira Novamente')
 
-    # Chamar Extrato
-    elif escolha == "1":
-        while True:
-            print('Chamar Extrato')
-            retorno_extrato = extrato(lista_tipo_transacao,lista_valor_transacao,lista_data_transacao)
-            if retorno_extrato == '0' or retorno_extrato == 0:
-                print('Voltando Ao Menu')
-                #print(lista_tipo_transacao,'\n',lista_valor_transacao)
-                break
 
+############
+
+main()
