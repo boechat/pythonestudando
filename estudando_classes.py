@@ -101,3 +101,38 @@ print('TROCANDO MARCHA\n')
 bike.trocar_marchar(3)
 print('------------')
 print('MARCHA AGORA : ',bike.marcha)
+
+###########################################################
+
+### CONSTRUTORES E DESTRUTORES
+
+## Método CONSTRUTOR (OU INICIALIZADOR ) __INIT__ sempre é executado quando uma nova instancia da classe é criada . Nesse método incializamos o estado do nosso bojeto.
+## Pra declarar o método construtor da classe, usamos __init__ .
+
+## Método DESTRTUOR sempre é executado quando uma instancia (objeto) é destruida. Não são tao necessarios quanto em C++ poque o Python
+## possui um coletor de lixo que lida com o gerenciamento de memoria automaticamente.
+## Para declarar o método destrutor da classe, criamos um método com o nome __del__
+class Gato:
+    def __init__(self,nome):   # inicializa
+        print('Inicializando a Classe',self.__class__.__name__)
+        self.nome = nome
+
+    def falar(self):
+        print('mIau')
+
+    def __del__(self):
+        print('Removendo a instancia da classe')
+
+def criar_gato():
+    q = Gato('Rajado')
+    print(q.nome)
+    q.falar()
+
+
+g = Gato('Lindo')
+print('OBJETO :',g,'MIA!')
+g.falar()
+print('----------')
+print('----------')
+
+criar_gato()
