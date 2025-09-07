@@ -1,6 +1,6 @@
 ### DICIONARIOS
-# COnjunto naoordenado de pares - CHAVE : VALOR 
-# Delimitado por chaves
+## COnjunto naoordenado de pares - CHAVE : VALOR 
+## Delimitado por chaves
 
 pessoa = {'nome':'Alfonso', 'idade':40}
 print(pessoa)
